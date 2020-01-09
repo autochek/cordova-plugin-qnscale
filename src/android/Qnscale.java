@@ -44,7 +44,12 @@ public class Qnscale extends CordovaPlugin {
             return true;
         }
         if (action.equals("connectQnscale")) {
-            this.connectQnscale(callbackContext);
+            int height = args.getInt(0);
+            String gender = args.getString(1);
+            int year = args.getInt(2);
+            int month = args.getInt(3);
+            int day = args.getInt(4);
+            this.connectQnscale(height, gender, year, month, day, callbackContext);
             return true;
         }
 
@@ -66,7 +71,7 @@ public class Qnscale extends CordovaPlugin {
 
     
 
-    public void connectQnscale(CallbackContext callbackContext){
+    public void connectQnscale(int height, String gender, int year, int month, int day, CallbackContext callbackContext){
         this.context = this.cordova.getActivity().getApplicationContext();
         this.instance = QNBleApi.getInstance(this.context);
 
@@ -75,21 +80,21 @@ public class Qnscale extends CordovaPlugin {
             @Override
             public void onResult(int code, String msg) {
                 Log.d(tag, "Initialization File "+code + msg);
-                Qnscale.this.startDiscovery(callbackContext);
+                Qnscale.this.startDiscovery(height, gender, year, month, day, callbackContext);
             }
         });
 
     }
 
 
-    private void startDiscovery(CallbackContext callbackContext){
+    private void startDiscovery(int height, String gender, int year, int month, int day, CallbackContext callbackContext){
         this.instance.setBleDeviceDiscoveryListener(
                 new QNBleDeviceDiscoveryListener() {
                     @Override
                     public void onDeviceDiscover(QNBleDevice device) {
                         // This method callback device object, can be processed by the device object
                         Log.d(tag, "onDeviceDiscover "+device);
-                        Qnscale.this.connectDevice(device, callbackContext);
+                        Qnscale.this.connectDevice(device, height, gender, year, month, day, callbackContext);
 
                     }
 
@@ -134,7 +139,7 @@ public class Qnscale extends CordovaPlugin {
         });
     }
 
-    private void connectDevice(QNBleDevice device, CallbackContext callbackContext){
+    private void connectDevice(QNBleDevice device, int height, String gender, int year, int month, int day, CallbackContext callbackContext){
         this.instance.stopBleDeviceDiscovery(
             new QNResultCallback() {
                 @Override
@@ -144,9 +149,11 @@ public class Qnscale extends CordovaPlugin {
             }
         );
 
+        // name, height, gender, birth(year, month, day)
+
         Calendar calendar = Calendar.getInstance();
-        calendar.set(1989,9,13);
-        QNUser user = instance.buildUser("testuser", 170, "male", new Date(calendar.getTimeInMillis()), 0, new QNResultCallback(){
+        calendar.set(year,month-1,day);
+        QNUser user = instance.buildUser("testuser", height, gender, new Date(calendar.getTimeInMillis()), 0, new QNResultCallback(){
             @Override
             public void onResult(int i, String s) {
                 Log.d(tag, "buildUser onResult "+i+" "+s);
