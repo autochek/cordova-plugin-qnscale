@@ -187,6 +187,7 @@ public class Qnscale extends CordovaPlugin {
                 json += "}";
 
                 callbackContext.success(json);
+                Qnscale.this.disconnect(device);
             }
 
             @Override
@@ -217,4 +218,14 @@ public class Qnscale extends CordovaPlugin {
         });
     }
 
+    private void disconnect(QNBleDevice device){
+        this.instance.disconnectDevice(device, new QNResultCallback() {
+                    @Override
+                    public void onResult(int i, String s) {
+                        Log.d(tag, "disconnect "+i+" "+s);
+                    }
+                }
+        );
+
+    }
 }
