@@ -167,9 +167,15 @@ public class Qnscale extends CordovaPlugin {
                 //This method is receiving complete measurement data
 
                 String json = "{";
+                boolean isFirst = true;
                 for(QNScaleItemData key : data.getAllItem() ){
+                    if(isFirst){
+                        isFirst=false;
+                    } else {
+                        json += ",";
+                    }
                     Log.d("detected", ""+key.getName()+" "+key.getValue());
-                    json += key.getName()+":"+key.getValue()+",";
+                    json += "\""+key.getName()+"\":"+key.getValue();
                 }
                 json += "}";
 
