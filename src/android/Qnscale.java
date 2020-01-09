@@ -64,9 +64,9 @@ public class Qnscale extends CordovaPlugin {
     private Context context;
     private QNBleApi instance;
 
-    public void connectQnscale(CallbackContext callbackContext){
+    
 
-        callbackContext.success("connectQnscale called!");
+    public void connectQnscale(CallbackContext callbackContext){
         this.context = this.cordova.getActivity().getApplicationContext();
         this.instance = QNBleApi.getInstance(this.context);
 
@@ -75,21 +75,21 @@ public class Qnscale extends CordovaPlugin {
             @Override
             public void onResult(int code, String msg) {
                 Log.d(tag, "Initialization File "+code + msg);
-                Qnscale.this.startDiscovery();
+                Qnscale.this.startDiscovery(callbackContext);
             }
         });
 
     }
 
 
-    private void startDiscovery(){
+    private void startDiscovery(CallbackContext callbackContext){
         this.instance.setBleDeviceDiscoveryListener(
                 new QNBleDeviceDiscoveryListener() {
                     @Override
                     public void onDeviceDiscover(QNBleDevice device) {
                         // This method callback device object, can be processed by the device object
                         Log.d(tag, "onDeviceDiscover "+device);
-                        Qnscale.this.connectDevice(device);
+                        Qnscale.this.connectDevice(device, callbackContext);
 
                     }
 
@@ -134,7 +134,7 @@ public class Qnscale extends CordovaPlugin {
         });
     }
 
-    private void connectDevice(QNBleDevice device){
+    private void connectDevice(QNBleDevice device, CallbackContext callbackContext){
         this.instance.stopBleDeviceDiscovery(
             new QNResultCallback() {
                 @Override
@@ -166,9 +166,14 @@ public class Qnscale extends CordovaPlugin {
             public void onGetScaleData(QNBleDevice device, QNScaleData data) {
                 //This method is receiving complete measurement data
 
+                String json = "{";
                 for(QNScaleItemData key : data.getAllItem() ){
                     Log.d("detected", ""+key.getName()+" "+key.getValue());
+                    json += key.getName()+":"+key.getValue()+",";
                 }
+                json += "}";
+
+                callbackContext.success(json);
             }
 
             @Override
