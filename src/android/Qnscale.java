@@ -31,6 +31,11 @@ import org.json.JSONObject;
 
 
 
+
+
+
+
+
 /**
  * This class echoes a string called from JavaScript.
  */
@@ -68,10 +73,19 @@ public class Qnscale extends CordovaPlugin {
     private String tag = "QnTest";
     private Context context;
     private QNBleApi instance;
-
+    
     
 
     public void connectQnscale(int height, String gender, int year, int month, int day, CallbackContext callbackContext){
+        new android.os.Handler().postDelayed(
+            new Runnable() {
+                public void run() {
+                    callbackContext.error("timeout");
+                    
+                }
+            },
+        60000);
+
         this.context = this.cordova.getActivity().getApplicationContext();
         this.instance = QNBleApi.getInstance(this.context);
 
@@ -113,6 +127,7 @@ public class Qnscale extends CordovaPlugin {
                     @Override
                     public void onScanFail(int code) {
                         Log.d(tag, "scanFail"+code);
+                        callbackContext.error("ScanFail");
                         // Scan the failed callback, there will be an error code to return, you can refer to the error code details page
                     }
 
@@ -228,4 +243,5 @@ public class Qnscale extends CordovaPlugin {
         );
 
     }
+
 }
