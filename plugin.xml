@@ -33,29 +33,4 @@
         <source-file src="src/123456789.qn" target-dir="src/main/assets" />
         <framework custom="true" src="src/android/build-extras.gradle" type="gradleReference" />
     </platform>
-
-    <platform name="ios">
-        
-        <pods-config ios-min-version="11" use-frameworks="true">
-            <source url="https://bitbucket.org/doing-lab/foodlenssdk-specs.git" />
-            <source url="https://github.com/CocoaPods/Specs.git"/>
-        </pods-config>
-        
-        <pod name="FoodLens" version="2.0.24"/>
-        
-        <edit-config target="NSPhotoLibraryUsageDescription" file="*-Info.plist" mode="merge" overwrite="true" >
-          <string>Foodlens requires photo to analyze food consumption</string>
-        </edit-config>
-        <edit-config target="NSCameraUsageDescription" file="*-Info.plist" mode="merge" overwrite="true">
-            <string>Foodlens requires photo to analyze food consumption</string>
-        </edit-config>
-
-
-        <config-file parent="/*" target="config.xml">
-            <feature name="Foodlens">
-                <param name="ios-package" value="Foodlens" />
-            </feature>
-        </config-file>
-        <source-file src="src/ios/Foodlens.swift" />
-    </platform>
 </plugin>
