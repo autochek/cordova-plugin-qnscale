@@ -1,8 +1,13 @@
 var exec = require('cordova/exec');
 
-exports.coolMethod = function (arg0, success, error) {
-    exec(success, error, 'Qnscale', 'coolMethod', [arg0]);
+exports.connect = function(deviceId, userId, height, gender, year, month, day, success, error) {
+    exec(success, error, 'Qnscale', 'connect', [deviceId, userId, height, gender, year, month, day]);
 };
-exports.connectQnscale=function(arg0, arg1, arg2, arg3, arg4, success, error) {
-    exec(success, error, 'Qnscale', 'connectQnscale', [arg0, arg1, arg2, arg3, arg4]);
-}
+
+exports.syncData = function(success, error) {
+	exec(success, error, 'Qnscale', 'syncData', []);
+};
+
+exports.disconnect = function(success, error) {
+	exec(success, error, 'Qnscale', 'disconnect', []);
+};

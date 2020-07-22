@@ -1,1 +1,1 @@
-# cordova-plugin-foodlens
+# cordova-plugin-qnscale
