@@ -491,8 +491,8 @@ public class Qnscale extends CordovaPlugin {
 					Qnscale.this.syncDataTimeoutHandler = null;
 				}
 
-				// 장치 연결 해제
-				Qnscale.this.disconnect(device, null);
+//				// 장치 연결 해제
+//				Qnscale.this.disconnect(device, null);
 
 				Map<String, Double> keyValues = new HashMap<String, Double>();
                 for(QNScaleItemData key : data.getAllItem() ){
