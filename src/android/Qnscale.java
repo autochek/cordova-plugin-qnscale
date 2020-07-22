@@ -484,11 +484,6 @@ public class Qnscale extends CordovaPlugin {
 //
 //				callbackContext.success(json);
 
-				Map<String, Double> keyValues = new HashMap<String, Double>();
-                for(QNScaleItemData key : data.getAllItem() ){
-					keyValues.put(key.getName(), key.getValue());
-				}
-
 				// 타임 아웃 취소
 				if(Qnscale.this.syncDataTimeoutHandler != null) {
 					Qnscale.this.syncDataTimeoutHandler.removeCallbacks(Qnscale.this.syncDataTimeoutRunnable);
@@ -496,14 +491,19 @@ public class Qnscale extends CordovaPlugin {
 					Qnscale.this.syncDataTimeoutHandler = null;
 				}
 
+				// 장치 연결 해제
+				Qnscale.this.disconnect(device, null);
+
+				Map<String, Double> keyValues = new HashMap<String, Double>();
+                for(QNScaleItemData key : data.getAllItem() ){
+					keyValues.put(key.getName(), key.getValue());
+				}
+
 				try {
 					// 성공으로 측정 데이터 반환
 					callbackContext.success(new ObjectMapper().writeValueAsString(new QnscaleResponse(true, "Data received", keyValues)));
 				} catch (JsonProcessingException e) {
 				}
-
-				// 장치 연결 해제
-                Qnscale.this.disconnect(device, null);
             }
 
 			/**
