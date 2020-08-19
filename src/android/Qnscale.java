@@ -192,8 +192,8 @@ public class Qnscale extends CordovaPlugin {
 				}
             }
         };
-		// 1분 뒤 타임 아웃 실행
-        this.connectionTimeoutHandler.postDelayed(this.connectionTimeoutRunnable, 60000);
+		// 10초 뒤 타임 아웃 실행
+		this.connectionTimeoutHandler.postDelayed(this.connectionTimeoutRunnable, 1000 * 10);
 
         // 설정 파일 경로
         String configFilePath = "file:///android_asset/123456789.qn";
@@ -445,8 +445,8 @@ public class Qnscale extends CordovaPlugin {
 				}
 			}
 		};
-		// 1분 뒤 타임 아웃 실행
-		this.syncDataTimeoutHandler.postDelayed(this.syncDataTimeoutRunnable, 60000);
+		// 10초 뒤 타임 아웃 실행
+		this.syncDataTimeoutHandler.postDelayed(this.syncDataTimeoutRunnable, 1000 * 10);
 
 		// 데이터 리스너 설정
         this.instance.setDataListener(new QNScaleDataListener() {
