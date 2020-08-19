@@ -445,8 +445,8 @@ public class Qnscale extends CordovaPlugin {
 				}
 			}
 		};
-		// 10초 뒤 타임 아웃 실행
-		this.syncDataTimeoutHandler.postDelayed(this.syncDataTimeoutRunnable, 1000 * 10);
+		// 30초 뒤 타임 아웃 실행
+		this.syncDataTimeoutHandler.postDelayed(this.syncDataTimeoutRunnable, 1000 * 30);
 
 		// 데이터 리스너 설정
         this.instance.setDataListener(new QNScaleDataListener() {
