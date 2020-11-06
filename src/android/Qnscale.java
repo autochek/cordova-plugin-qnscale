@@ -154,6 +154,7 @@ public class Qnscale extends CordovaPlugin {
 	/**
 	 * 장치 접속 요청 (장치 검색 후 연결)
 	 * @param deviceId 장치 아이디 (맥주소)
+	 * @param connectionTimeoutSec 연결 타임 아웃 (초)
 	 * @param userId 사용자 아이디
 	 * @param height 키
 	 * @param gender 성별
@@ -162,38 +163,41 @@ public class Qnscale extends CordovaPlugin {
 	 * @param day 생일
 	 * @param callbackContext 결과 콜백 컨텍스트
 	 */
-    private void connect(String deviceId, String userId, int height, String gender, int year, int month, int day, CallbackContext callbackContext) {
+    private void connect(String deviceId, int connectionTimeoutSec, String userId, int height, String gender, int year, int month, int day, CallbackContext callbackContext) {
 
 		Log.d(TAG, "try to connect : " + deviceId);
 
-    	// 1분 동안 검색이 되지 않는 경우 타임 아웃 시키는 핸들러와 실행 생성
-		this.connectionTimeoutHandler = new android.os.Handler();
-		this.connectionTimeoutRunnable = new Runnable() {
-            public void run() {
-				try {
-
-					// 장치 검색 중지
-					Qnscale.this.instance.stopBleDeviceDiscovery(new QNResultCallback() {
-						/**
-						 * 장치 검색 중지 결과
-						 * @param code 결과 코드
-						 * @param msg 에러 메세지
-						 */
-						@Override
-						public void onResult(int code, String msg) {
-							Log.d(TAG, "scan stopped : " + code + ", " + msg);
-						}
-					});
-
-					// 타임 아웃 에러 반환
-					Log.e(TAG, "Qnscale.connect : Connection timeout");
-					callbackContext.error(new ObjectMapper().writeValueAsString(new QnscaleResponse(false, "Connection timeout")));
-				} catch (JsonProcessingException e) {
-				}
-            }
-        };
-		// 10초 뒤 타임 아웃 실행
-		this.connectionTimeoutHandler.postDelayed(this.connectionTimeoutRunnable, 1000 * 10);
+		// 연결 타임 아웃이 지정된 경우
+		if(connectionTimeoutSec > 0) {
+	    	// 특정 시간 동안 검색이 되지 않는 경우 타임 아웃 시키는 핸들러와 실행 생성
+			this.connectionTimeoutHandler = new android.os.Handler();
+			this.connectionTimeoutRunnable = new Runnable() {
+	            public void run() {
+					try {
+	
+						// 장치 검색 중지
+						Qnscale.this.instance.stopBleDeviceDiscovery(new QNResultCallback() {
+							/**
+							 * 장치 검색 중지 결과
+							 * @param code 결과 코드
+							 * @param msg 에러 메세지
+							 */
+							@Override
+							public void onResult(int code, String msg) {
+								Log.d(TAG, "scan stopped : " + code + ", " + msg);
+							}
+						});
+	
+						// 타임 아웃 에러 반환
+						Log.e(TAG, "Qnscale.connect : Connection timeout");
+						callbackContext.error(new ObjectMapper().writeValueAsString(new QnscaleResponse(false, "Connection timeout")));
+					} catch (JsonProcessingException e) {
+					}
+	            }
+	        };
+			// 10초 뒤 타임 아웃 실행
+			this.connectionTimeoutHandler.postDelayed(this.connectionTimeoutRunnable, 1000 * connectionTimeoutSec);
+		}
 
         // 설정 파일 경로
         String configFilePath = "file:///android_asset/123456789.qn";
