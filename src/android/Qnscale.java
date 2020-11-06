@@ -91,18 +91,19 @@ public class Qnscale extends CordovaPlugin {
 
 			// 파라미터에서 사용자 정보를 저장
 			String deviceId = args.getString(0);
-            String userId = args.getString(1);
-            int height = args.getInt(2);
-            String gender = args.getString(3);
-            int year = args.getInt(4);
-            int month = args.getInt(5);
-            int day = args.getInt(6);
+            int connectionTimeoutSec = args.getString(1);
+            String userId = args.getString(2);
+            int height = args.getInt(3);
+            String gender = args.getString(4);
+            int year = args.getInt(5);
+            int month = args.getInt(6);
+            int day = args.getInt(7);
 
 			// API 인스턴스를 가져온다.
 			this.instance = QNBleApi.getInstance(this.cordova.getActivity().getApplicationContext());
 
             // 장치 연결
-            this.connect(deviceId, userId, height, gender, year, month, day, callbackContext);
+            this.connect(deviceId, connectionTimeoutSec, userId, height, gender, year, month, day, callbackContext);
 
             return true;
         }
