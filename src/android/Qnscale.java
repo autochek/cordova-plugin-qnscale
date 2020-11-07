@@ -44,7 +44,7 @@ public class Qnscale extends CordovaPlugin {
 	/**
 	 * 로깅용 태그
 	 */
-	private String TAG = "aprilis.autochek.care";
+	private String TAG = "aprilis.autochek.care.Qnscale";
 	/**
 	 * API 인스턴스
 	 */
@@ -91,7 +91,7 @@ public class Qnscale extends CordovaPlugin {
 
 			// 파라미터에서 사용자 정보를 저장
 			String deviceId = args.getString(0);
-            int connectionTimeoutSec = args.getString(1);
+            int connectionTimeoutSec = args.getInt(1);
             String userId = args.getString(2);
             int height = args.getInt(3);
             String gender = args.getString(4);
@@ -199,6 +199,16 @@ public class Qnscale extends CordovaPlugin {
 			// 10초 뒤 타임 아웃 실행
 			this.connectionTimeoutHandler.postDelayed(this.connectionTimeoutRunnable, 1000 * connectionTimeoutSec);
 		}
+
+        Log.d(TAG, "deviceId : " + deviceId);
+        Log.d(TAG, "connectionTimeoutSec : " + String.valueOf(connectionTimeoutSec));
+        Log.d(TAG, "userId : " + userId);
+        Log.d(TAG, "height : " + String.valueOf(height));
+        Log.d(TAG, "gender : " + gender);
+        Log.d(TAG, "year : " + String.valueOf(year));
+        Log.d(TAG, "month : " + String.valueOf(month));
+        Log.d(TAG, "day : " + String.valueOf(day));
+
 
         // 설정 파일 경로
         String configFilePath = "file:///android_asset/123456789.qn";
