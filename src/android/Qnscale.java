@@ -200,16 +200,6 @@ public class Qnscale extends CordovaPlugin {
 			this.connectionTimeoutHandler.postDelayed(this.connectionTimeoutRunnable, 1000 * connectionTimeoutSec);
 		}
 
-        Log.d(TAG, "deviceId : " + deviceId);
-        Log.d(TAG, "connectionTimeoutSec : " + String.valueOf(connectionTimeoutSec));
-        Log.d(TAG, "userId : " + userId);
-        Log.d(TAG, "height : " + String.valueOf(height));
-        Log.d(TAG, "gender : " + gender);
-        Log.d(TAG, "year : " + String.valueOf(year));
-        Log.d(TAG, "month : " + String.valueOf(month));
-        Log.d(TAG, "day : " + String.valueOf(day));
-
-
         // 설정 파일 경로
         String configFilePath = "file:///android_asset/123456789.qn";
         // SDK를 초기화 한다.
