@@ -27,7 +27,7 @@
 		</config-file>
 		<source-file src="src/android/Qnscale.java" target-dir="src/cordova/plugin/qnscale" />
 		<source-file src="src/android/QnscaleResponse.java" target-dir="src/cordova/plugin/qnscale" />
-		<source-file src="src/123456789.qn" target-dir="src/main/assets" />
+		<source-file src="src/APRILIS20191216.qn" target-dir="src/main/assets" />
 		<framework custom="true" src="src/android/build-extras.gradle" type="gradleReference" />
 	</platform>
 	<platform name="ios">
@@ -36,6 +36,10 @@
 				<param name="ios-package" value="Qnscale" />
 			</feature>
 		</config-file>
+		<source-file src="src/ios/QnscaleResponse.h" />
+		<source-file src="src/ios/QnscaleResponse.m" />
 		<source-file src="src/ios/Qnscale.m" />
-	</platform>
+		<resource-file src="src/APRILIS20191216.qn" />
+		<framework src="src/ios/QNSDK.framework" custom="true" />
+ 	</platform>
 </plugin>

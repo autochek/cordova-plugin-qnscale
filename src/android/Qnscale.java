@@ -7,6 +7,10 @@ import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
 
 import android.content.Context;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -53,9 +57,9 @@ public class Qnscale extends CordovaPlugin {
 	 * 연결 타임 아웃 핸들러
 	 */
 	private android.os.Handler connectionTimeoutHandler = null;
-    /**
-     * 연결 타임 아웃 실행
-     */
+	/**
+	 * 연결 타임 아웃 실행
+	 */
 	private Runnable connectionTimeoutRunnable = null;
 	/**
 	 * 데이터 동기화 타임 아웃 핸들러
@@ -78,36 +82,34 @@ public class Qnscale extends CordovaPlugin {
 	 * @return 성공 여부
 	 * @throws JSONException JSON 예외
 	 */
-    @Override
-    public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+	@Override
+	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 
 		Log.d(TAG, "execute : " + action + ", " + args);
 
-    	// 연결 요청
-        if (action.equals("connect")) {
+		// 연결 요청
+		if (action.equals("connect")) {
 
-        	// 연결된 장치 정보 초기화
+			// 연결된 장치 정보 초기화
 			this.connectDevice = null;
 
 			// 파라미터에서 사용자 정보를 저장
 			String deviceId = args.getString(0);
-            int connectionTimeoutSec = args.getInt(1);
-            String userId = args.getString(2);
-            int height = args.getInt(3);
-            String gender = args.getString(4);
-            int year = args.getInt(5);
-            int month = args.getInt(6);
-            int day = args.getInt(7);
+			int connectionTimeoutSec = args.getInt(1);
+			String userId = args.getString(2);
+			int height = args.getInt(3);
+			String gender = args.getString(4);
+			String birthDate = args.getString(5);
 
 			// API 인스턴스를 가져온다.
 			this.instance = QNBleApi.getInstance(this.cordova.getActivity().getApplicationContext());
 
-            // 장치 연결
-            this.connect(deviceId, connectionTimeoutSec, userId, height, gender, year, month, day, callbackContext);
+			// 장치 연결
+			this.connect(deviceId, connectionTimeoutSec, userId, height, gender, birthDate, callbackContext);
 
-            return true;
-        }
-        // 동기화 요청
+			return true;
+		}
+		// 동기화 요청
 		else if (action.equals("syncData")) {
 
 			// API 인스턴스가 유효하지 않거나 장치 정보가 유효하지 않은 경우
@@ -149,8 +151,8 @@ public class Qnscale extends CordovaPlugin {
 			return true;
 		}
 
-        return false;
-    }
+		return false;
+	}
 
 	/**
 	 * 장치 접속 요청 (장치 검색 후 연결)
@@ -159,23 +161,21 @@ public class Qnscale extends CordovaPlugin {
 	 * @param userId 사용자 아이디
 	 * @param height 키
 	 * @param gender 성별
-	 * @param year 생년
-	 * @param month 생월
-	 * @param day 생일
+	 * @param birthDateString 생년월일
 	 * @param callbackContext 결과 콜백 컨텍스트
 	 */
-    private void connect(String deviceId, int connectionTimeoutSec, String userId, int height, String gender, int year, int month, int day, CallbackContext callbackContext) {
+	private void connect(String deviceId, int connectionTimeoutSec, String userId, int height, String gender, String birthDateString, CallbackContext callbackContext) {
 
 		Log.d(TAG, "try to connect : " + deviceId);
 
 		// 연결 타임 아웃이 지정된 경우
 		if(connectionTimeoutSec > 0) {
-	    	// 특정 시간 동안 검색이 되지 않는 경우 타임 아웃 시키는 핸들러와 실행 생성
+			// 특정 시간 동안 검색이 되지 않는 경우 타임 아웃 시키는 핸들러와 실행 생성
 			this.connectionTimeoutHandler = new android.os.Handler();
 			this.connectionTimeoutRunnable = new Runnable() {
-	            public void run() {
+				public void run() {
 					try {
-	
+
 						// 장치 검색 중지
 						Qnscale.this.instance.stopBleDeviceDiscovery(new QNResultCallback() {
 							/**
@@ -188,37 +188,41 @@ public class Qnscale extends CordovaPlugin {
 								Log.d(TAG, "scan stopped : " + code + ", " + msg);
 							}
 						});
-	
+
 						// 타임 아웃 에러 반환
 						Log.e(TAG, "Qnscale.connect : Connection timeout");
 						callbackContext.error(new ObjectMapper().writeValueAsString(new QnscaleResponse(false, "Connection timeout")));
 					} catch (JsonProcessingException e) {
 					}
-	            }
-	        };
+				}
+			};
 			// 10초 뒤 타임 아웃 실행
 			this.connectionTimeoutHandler.postDelayed(this.connectionTimeoutRunnable, 1000 * connectionTimeoutSec);
 		}
 
-        // 설정 파일 경로
-        String configFilePath = "file:///android_asset/123456789.qn";
-        // SDK를 초기화 한다.
-        this.instance.initSdk("123456789", configFilePath, new QNResultCallback() {
+		// 설정 파일 경로
+		String configFilePath = "file:///android_asset/APRILIS20191216.qn";
+		// SDK를 초기화 한다.
+		this.instance.initSdk("APRILIS20191216", configFilePath, new QNResultCallback() {
 			/**
 			 * 초기화 결과
 			 * @param code 결과 코드
 			 * @param msg 에러 메세지
 			 */
 			@Override
-            public void onResult(int code, String msg) {
+			public void onResult(int code, String msg) {
 
-                Log.d(TAG, "API Initialized : " + code + ", " + msg);
+				Log.d(TAG, "API Initialized : " + code + ", " + msg);
 
 				// 사용자 생년월일 저장
-				Calendar calendar = Calendar.getInstance();
-				calendar.set(year, month-1, day);
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				Date birthDate = new Date();
+				try {
+					birthDate = dateFormat.parse(birthDateString);
+				} catch (ParseException e) {
+				}
 				// 사용자 정보 생성
-				QNUser user = Qnscale.this.instance.buildUser(userId, height, gender, new Date(calendar.getTimeInMillis()), 0, new QNResultCallback(){
+				QNUser user = Qnscale.this.instance.buildUser(userId, height, gender, birthDate, 0, new QNResultCallback(){
 					/**
 					 * 사용자 정보 생성 결과
 					 * @param code 결과 코드
@@ -230,12 +234,12 @@ public class Qnscale extends CordovaPlugin {
 					}
 				});
 
-                // 장치 검색
-                Qnscale.this.startDiscovery(deviceId, user, callbackContext);
-            }
-        });
+				// 장치 검색
+				Qnscale.this.startDiscovery(deviceId, user, callbackContext);
+			}
+		});
 
-    }
+	}
 
 	/**
 	 * 장치 검색
@@ -243,19 +247,19 @@ public class Qnscale extends CordovaPlugin {
 	 * @param user 사용자 정보
 	 * @param callbackContext 결과 콜백 컨텍스트
 	 */
-    private void startDiscovery(String deviceId, QNUser user, CallbackContext callbackContext){
+	private void startDiscovery(String deviceId, QNUser user, CallbackContext callbackContext){
 
-        /**
-         * 장치 검색 리스너
-         */
-        this.instance.setBleDeviceDiscoveryListener(
-                new QNBleDeviceDiscoveryListener() {
+		/**
+		 * 장치 검색 리스너
+		 */
+		this.instance.setBleDeviceDiscoveryListener(
+				new QNBleDeviceDiscoveryListener() {
 					/**
 					 * 장치 발견 시 이벤트
 					 * @param device
 					 */
 					@Override
-                    public void onDeviceDiscover(QNBleDevice device) {
+					public void onDeviceDiscover(QNBleDevice device) {
 						try {
 							Log.d(TAG, "onDeviceDiscover : " + (new ObjectMapper().writeValueAsString(device)));
 						} catch (JsonProcessingException e) {
@@ -369,31 +373,31 @@ public class Qnscale extends CordovaPlugin {
 								}
 							});
 						}
-                    }
+					}
 
 					/**
 					 * 장치 검색 시작 이벤트
 					 */
 					@Override
-                    public void onStartScan() {
-                        Log.d(TAG, "start scan");
-                    }
+					public void onStartScan() {
+						Log.d(TAG, "start scan");
+					}
 
 					/**
 					 * 장치 검색 중지 이벤트
 					 */
 					@Override
-                    public void onStopScan() {
-                        Log.d(TAG, "stop scan");
-                    }
+					public void onStopScan() {
+						Log.d(TAG, "stop scan");
+					}
 
 					/**
 					 * 장치 검색 에러 이벤트
 					 * @param code
 					 */
 					@Override
-                    public void onScanFail(int code) {
-                        Log.e(TAG, "scan fail : " + code);
+					public void onScanFail(int code) {
+						Log.e(TAG, "scan fail : " + code);
 
 						try {
 							// 스캔 에러 반환
@@ -401,19 +405,19 @@ public class Qnscale extends CordovaPlugin {
 							callbackContext.error(new ObjectMapper().writeValueAsString(new QnscaleResponse(false, "Scan failure")));
 						} catch (JsonProcessingException e) {
 						}
-                    }
+					}
 
 					@Override
-                    public void onBroadcastDeviceDiscover(QNBleBroadcastDevice device) {
+					public void onBroadcastDeviceDiscover(QNBleBroadcastDevice device) {
 
-                    }
+					}
 
-                    @Override
-                    public void onKitchenDeviceDiscover(QNBleKitchenDevice qnBleKitchenDevice) {
+					@Override
+					public void onKitchenDeviceDiscover(QNBleKitchenDevice qnBleKitchenDevice) {
 
-                    }
-                }
-        );
+					}
+				}
+		);
 
 		/**
 		 * 장치 검색 시작
@@ -424,18 +428,18 @@ public class Qnscale extends CordovaPlugin {
 			 * @param code 결과 코드
 			 * @param msg 에러 메세지
 			 */
-            @Override
-            public void onResult(int code, String msg) {
+			@Override
+			public void onResult(int code, String msg) {
 				Log.d(TAG, "start ble device : " + code + ", " + msg);
-            }
-        });
-    }
+			}
+		});
+	}
 
 	/**
 	 * 데이터 리스너 설정
 	 * @param callbackContext 결과 콜백 컨텍스트
 	 */
-    private void setDataListener(CallbackContext callbackContext){
+	private void setDataListener(CallbackContext callbackContext){
 
 		// 1분 동안 검색이 되지 않는 경우 타임 아웃 시키는 핸들러와 실행 생성
 		this.syncDataTimeoutHandler = new android.os.Handler();
@@ -454,7 +458,7 @@ public class Qnscale extends CordovaPlugin {
 		this.syncDataTimeoutHandler.postDelayed(this.syncDataTimeoutRunnable, 1000 * 30);
 
 		// 데이터 리스너 설정
-        this.instance.setDataListener(new QNScaleDataListener() {
+		this.instance.setDataListener(new QNScaleDataListener() {
 
 			/**
 			 * 실시간 몸무게 수신
@@ -462,8 +466,8 @@ public class Qnscale extends CordovaPlugin {
 			 * @param weight 실시간 몸무게
 			 */
 			@Override
-            public void onGetUnsteadyWeight(QNBleDevice device, double weight) {
-            }
+			public void onGetUnsteadyWeight(QNBleDevice device, double weight) {
+			}
 
 			/**
 			 * 측정된 데이터 수신
@@ -471,23 +475,7 @@ public class Qnscale extends CordovaPlugin {
 			 * @param data 측정 데이터 객체
 			 */
 			@Override
-            public void onGetScaleData(QNBleDevice device, QNScaleData data) {
-
-
-//                String json = "{";
-//                boolean isFirst = true;
-//                for(QNScaleItemData key : data.getAllItem() ){
-//                    if(isFirst){
-//                        isFirst=false;
-//                    } else {
-//                        json += ",";
-//                    }
-//                    Log.d("detected", ""+key.getName()+" "+key.getValue());
-//                    json += "\""+key.getName()+"\":"+key.getValue();
-//                }
-//                json += "}";
-//
-//				callbackContext.success(json);
+			public void onGetScaleData(QNBleDevice device, QNScaleData data) {
 
 				// 타임 아웃 취소
 				if(Qnscale.this.syncDataTimeoutHandler != null) {
@@ -499,17 +487,21 @@ public class Qnscale extends CordovaPlugin {
 				// 장치 연결 해제
 				Qnscale.this.disconnect(device, null);
 
+				ArrayList<Map<String, Double>> datas = new ArrayList<Map<String, Double>>();
+
 				Map<String, Double> keyValues = new HashMap<String, Double>();
-                for(QNScaleItemData key : data.getAllItem() ){
+				for(QNScaleItemData key : data.getAllItem() ){
 					keyValues.put(key.getName(), key.getValue());
 				}
 
+				datas.add(keyValues);
+
 				try {
 					// 성공으로 측정 데이터 반환
-					callbackContext.success(new ObjectMapper().writeValueAsString(new QnscaleResponse(true, "Data received", keyValues)));
+					callbackContext.success(new ObjectMapper().writeValueAsString(new QnscaleResponse(true, "Data received", datas)));
 				} catch (JsonProcessingException e) {
 				}
-            }
+			}
 
 			/**
 			 * 오프라인으로 저장된 데이터 수신
@@ -517,9 +509,9 @@ public class Qnscale extends CordovaPlugin {
 			 * @param storedDataList
 			 */
 			@Override
-            public void onGetStoredScale(QNBleDevice device, List<QNScaleStoreData> storedDataList) {
+			public void onGetStoredScale(QNBleDevice device, List<QNScaleStoreData> storedDataList) {
 
-            }
+			}
 
 			/**
 			 * 배터리 정보 수신
@@ -527,9 +519,9 @@ public class Qnscale extends CordovaPlugin {
 			 * @param electric 남은 배터리 용량
 			 */
 			@Override
-            public void onGetElectric(QNBleDevice device, int electric) {
+			public void onGetElectric(QNBleDevice device, int electric) {
 
-            }
+			}
 
 			/**
 			 * 측정 상태 변경 (Bluetooth 연결 상태에 대한 콜백이 아님)
@@ -537,13 +529,13 @@ public class Qnscale extends CordovaPlugin {
 			 * @param status 상태
 			 */
 			@Override
-            public void onScaleStateChange(QNBleDevice device, int status) {
+			public void onScaleStateChange(QNBleDevice device, int status) {
 
-            }
+			}
 
-        });
+		});
 
-    }
+	}
 
 	/**
 	 * 장치 연결 해제
@@ -553,7 +545,7 @@ public class Qnscale extends CordovaPlugin {
 	private void disconnect(QNBleDevice device, CallbackContext callbackContext){
 
 		// 장치 연결 해제
-        this.instance.disconnectDevice(device, new QNResultCallback() {
+		this.instance.disconnectDevice(device, new QNResultCallback() {
 			/**
 			 * 장치 연결 해제 결과
 			 * @param code 결과 코드
@@ -565,7 +557,7 @@ public class Qnscale extends CordovaPlugin {
 			}
 		});
 
-        if(callbackContext != null) {
+		if(callbackContext != null) {
 			try {
 				// 성공으로 결과 반환
 				callbackContext.success(new ObjectMapper().writeValueAsString(new QnscaleResponse(true, "device disconnected")));
@@ -573,6 +565,6 @@ public class Qnscale extends CordovaPlugin {
 			}
 
 		}
-    }
+	}
 
 }
