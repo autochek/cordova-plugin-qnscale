@@ -1,9 +1,9 @@
 {
-  "name": "cordova-plugins-aprilis-device-qnscale",
+  "name": "cordova-plugin-aprilis-device-qnscale",
   "version": "0.0.1",
   "description": "",
   "cordova": {
-    "id": "cordova-plugins-aprilis-device-qnscale",
+    "id": "cordova-plugin-aprilis-device-qnscale",
     "platforms": [
       "android",
       "ios"
