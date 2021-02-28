@@ -25,8 +25,8 @@
 			<service android:name="com.qingniu.scale.measure.ble.ScaleBleService" />
 			<service android:name="com.qingniu.scale.measure.broadcast.ScaleBroadcastService" />
 		</config-file>
-		<source-file src="src/android/Qnscale.java" target-dir="src/cordova/plugin/qnscale" />
-		<source-file src="src/android/QnscaleResponse.java" target-dir="src/cordova/plugin/qnscale" />
+		<source-file src="src/android/Qnscale.java" target-dir="src/cordova/plugins/qnscale" />
+		<source-file src="src/android/QnscaleResponse.java" target-dir="src/cordova/plugins/qnscale" />
 		<source-file src="src/APRILIS20191216.qn" target-dir="src/main/assets" />
 		<framework custom="true" src="src/android/build-extras.gradle" type="gradleReference" />
 	</platform>
