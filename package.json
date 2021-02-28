@@ -1,17 +1,27 @@
 {
-  "name": "cordova-plugin-qnscale",
+  "name": "cordova-plugins-aprilis-device-qnscale",
   "version": "0.0.1",
   "description": "",
   "cordova": {
-    "id": "cordova-plugin-qnscale",
+    "id": "cordova-plugins-aprilis-device-qnscale",
     "platforms": [
-      "android"
+      "android",
+      "ios"
     ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/autochek/cordova-plugin-qnscale.git"
   },
   "keywords": [
     "ecosystem:cordova",
-    "cordova-android"
+    "cordova-android",
+    "cordova-ios"
   ],
-  "author": "",
-  "license": "ISC"
+  "author": "aprilis",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/autochek/cordova-plugin-qnscale/issues"
+  },
+  "homepage": "https://github.com/autochek/cordova-plugin-qnscale#readme"
 }

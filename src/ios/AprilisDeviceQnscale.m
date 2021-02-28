@@ -2,7 +2,7 @@
 
 #import <Cordova/CDV.h>
 #import <QNSDK/QNBleApi.h>
-#import "QnscaleResponse.h"
+#import "AprilisDeviceQnscaleResponse.h"
 
 #define AutoChekBodyCompositionMainService		@"FFF0"
 #define AutoChekBodyCompositionMainServiceRead	@"FFF1"

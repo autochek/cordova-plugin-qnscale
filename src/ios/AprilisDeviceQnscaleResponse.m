@@ -2,7 +2,7 @@
 // Created by chang.lee on 2020/12/12.
 //
 
-#import "QnscaleResponse.h"
+#import "AprilisDeviceQnscaleResponse.h"
 
 
 @implementation QnscaleResponse
