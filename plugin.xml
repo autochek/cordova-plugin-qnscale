@@ -1,14 +1,14 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="cordova-plugin-qnscale" version="0.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
-	<name>Qnscale</name>
-	<js-module name="Qnscale" src="www/Qnscale.js">
-		<clobbers target="cordova.plugins.qnscale" />
+<plugin id="cordova-plugin-aprilis-device-qnscale" version="0.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+	<name>AprilisDeviceQnscale</name>
+	<js-module name="AprilisDeviceQnscale" src="www/AprilisDeviceQnscale.js">
+		<clobbers target="cordova.plugins.aprilis.device.qnscale" />
 	</js-module>
 
 	<platform name="android">
 		<config-file parent="/*" target="res/xml/config.xml">
-			<feature name="Qnscale">
-				<param name="android-package" value="cordova.plugins.qnscale.Qnscale" />
+			<feature name="AprilisDeviceQnscale">
+				<param name="android-package" value="cordova.plugins.aprilis.device.qnscale.AprilisDeviceQnscale" />
 			</feature>
 		</config-file>
 		<config-file mode="merge" parent="/manifest" target="AndroidManifest.xml">
@@ -25,8 +25,8 @@
 			<service android:name="com.qingniu.scale.measure.ble.ScaleBleService" />
 			<service android:name="com.qingniu.scale.measure.broadcast.ScaleBroadcastService" />
 		</config-file>
-		<source-file src="src/android/Qnscale.java" target-dir="src/cordova/plugins/qnscale" />
-		<source-file src="src/android/QnscaleResponse.java" target-dir="src/cordova/plugins/qnscale" />
+		<source-file src="src/android/Qnscale.java" target-dir="src/cordova/plugins/aprilis/device/qnscale" />
+		<source-file src="src/android/QnscaleResponse.java" target-dir="src/cordova/plugins/aprilis/device/qnscale" />
 		<source-file src="src/APRILIS20191216.qn" target-dir="src/main/assets" />
 		<framework custom="true" src="src/android/build-extras.gradle" type="gradleReference" />
 	</platform>
@@ -36,9 +36,9 @@
 				<param name="ios-package" value="Qnscale" />
 			</feature>
 		</config-file>
-		<source-file src="src/ios/QnscaleResponse.h" />
-		<source-file src="src/ios/QnscaleResponse.m" />
-		<source-file src="src/ios/Qnscale.m" />
+		<source-file src="src/ios/AprilisDeviceQnscaleResponse.h" />
+		<source-file src="src/ios/AprilisDeviceQnscaleResponse.m" />
+		<source-file src="src/ios/AprilisDeviceQnscale.m" />
 		<resource-file src="src/APRILIS20191216.qn" />
 		<framework src="src/ios/QNSDK.framework" custom="true" />
  	</platform>
