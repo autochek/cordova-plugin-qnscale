@@ -478,19 +478,6 @@ public class AprilisDeviceQnscale extends CordovaPlugin {
 					AprilisDeviceQnscale.this.syncDataTimeoutHandler = null;
 				}
 
-//				// 장치 연결 해제
-//				AprilisDeviceQnscale.this.disconnect(device, null);
-
-//				ArrayList<Map<String, Double>> datas = new ArrayList<Map<String, Double>>();
-//
-//				Map<String, Double> keyValues = new HashMap<String, Double>();
-//				for(QNScaleItemData key : data.getAllItem() ){
-//
-//					keyValues.put(key.getName(), key.getValue());
-//				}
-//
-//				datas.add(keyValues);
-
 				AprilisDeviceQnscaleData responseData = new AprilisDeviceQnscaleData();
 				for(QNScaleItemData key : data.getAllItem() ){
 
@@ -540,11 +527,7 @@ public class AprilisDeviceQnscale extends CordovaPlugin {
 					Log.d(TAG, "AprilisDeviceQnscale.onGetScaleData : Sync. data = " + responseData.toString());
 
 					// 성공으로 측정 데이터 반환
-					String dataString = new ObjectMapper().writeValueAsString(new AprilisDeviceQnscaleResponse(true, "Data received"));
-
-					Log.d(TAG, "AprilisDeviceQnscale.onGetScaleData : Sync. data string = " + dataString);
-
-					callbackContext.success(dataString);
+					callbackContext.success(new ObjectMapper().writeValueAsString(new AprilisDeviceQnscaleResponse(true, "Data received", responseData)));
 				} catch (JsonProcessingException e) {
 					Log.e(TAG, "AprilisDeviceQnscale.onGetScaleData : error -  " + e.toString());
 				}
