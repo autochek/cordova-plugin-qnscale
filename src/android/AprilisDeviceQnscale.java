@@ -497,6 +497,9 @@ public class AprilisDeviceQnscale extends CordovaPlugin {
 				datas.add(keyValues);
 
 				try {
+
+					Log.e(TAG, "AprilisDeviceQnscale.onGetScaleData : Sync. data = " + keyValues.toString());
+
 					// 성공으로 측정 데이터 반환
 					callbackContext.success(new ObjectMapper().writeValueAsString(new AprilisDeviceQnscaleResponse(true, "Data received", datas)));
 				} catch (JsonProcessingException e) {
