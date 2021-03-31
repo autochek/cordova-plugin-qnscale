@@ -4,10 +4,10 @@ exports.connect = function(deviceId, connectionTimeoutSec, userId, gender, year,
     exec(success, error, 'AprilisDeviceQnscale', 'connect', [deviceId, connectionTimeoutSec, userId, gender, year, height]);
 };
 
-exports.syncData = function(deviceId, success, error) {
-	exec(success, error, 'AprilisDeviceQnscale', 'syncData', [deviceId]);
+exports.syncData = function(success, error) {
+	exec(success, error, 'AprilisDeviceQnscale', 'syncData', []);
 };
 
-exports.disconnect = function(deviceId, success, error) {
-	exec(success, error, 'AprilisDeviceQnscale', 'disconnect', [deviceId]);
+exports.disconnect = function(success, error) {
+	exec(success, error, 'AprilisDeviceQnscale', 'disconnect', []);
 };
