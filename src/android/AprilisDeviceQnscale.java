@@ -1,26 +1,13 @@
 package cordova.plugins.aprilis.device.qnscale;
 
-import android.content.Intent;
 import android.util.Log;
 
-import org.apache.cordova.CordovaPlugin;
-import org.apache.cordova.CallbackContext;
-
-import android.content.Context;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yolanda.health.qnblesdk.listener.QNBleConnectionChangeListener;
 import com.yolanda.health.qnblesdk.listener.QNBleDeviceDiscoveryListener;
 import com.yolanda.health.qnblesdk.listener.QNResultCallback;
 import com.yolanda.health.qnblesdk.listener.QNScaleDataListener;
-import com.yolanda.health.qnblesdk.listener.QNBleConnectionChangeListener;
 import com.yolanda.health.qnblesdk.out.QNBleApi;
 import com.yolanda.health.qnblesdk.out.QNBleBroadcastDevice;
 import com.yolanda.health.qnblesdk.out.QNBleDevice;
@@ -30,14 +17,21 @@ import com.yolanda.health.qnblesdk.out.QNScaleItemData;
 import com.yolanda.health.qnblesdk.out.QNScaleStoreData;
 import com.yolanda.health.qnblesdk.out.QNUser;
 
+import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
-import cordova.plugin.qnscale.AprilisDeviceQnscaleResponse;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import cordova.plugins.aprilis.device.lsband5s.AprilisDeviceLSBand5sResponse;
 
 
 /**
@@ -484,25 +478,75 @@ public class AprilisDeviceQnscale extends CordovaPlugin {
 					AprilisDeviceQnscale.this.syncDataTimeoutHandler = null;
 				}
 
-				// 장치 연결 해제
-				AprilisDeviceQnscale.this.disconnect(device, null);
+//				// 장치 연결 해제
+//				AprilisDeviceQnscale.this.disconnect(device, null);
 
-				ArrayList<Map<String, Double>> datas = new ArrayList<Map<String, Double>>();
+//				ArrayList<Map<String, Double>> datas = new ArrayList<Map<String, Double>>();
+//
+//				Map<String, Double> keyValues = new HashMap<String, Double>();
+//				for(QNScaleItemData key : data.getAllItem() ){
+//
+//					keyValues.put(key.getName(), key.getValue());
+//				}
+//
+//				datas.add(keyValues);
 
-				Map<String, Double> keyValues = new HashMap<String, Double>();
+				AprilisDeviceQnscaleData responseData = new AprilisDeviceQnscaleData();
 				for(QNScaleItemData key : data.getAllItem() ){
-					keyValues.put(key.getName(), key.getValue());
+
+					switch(key.getName()) {
+						case "bone mass":
+							responseData.setBoneMass(key.getValue());
+							break;
+						case "BMR":
+							responseData.setBmr(key.getValue());
+							break;
+						case "weight":
+							responseData.setWeight(key.getValue());
+							break;
+						case "metabolic age":
+							responseData.setMetabolicAge(key.getValue());
+							break;
+						case "body fat rate":
+							responseData.setBodyFatRate(key.getValue());
+							break;
+						case "body type":
+							responseData.setBodyType(key.getValue());
+							break;
+						case "muscle mass":
+							responseData.setMuscleMass(key.getValue());
+							break;
+						case "body water rate":
+							responseData.setBodyWaterRate(key.getValue());
+							break;
+						case "protein":
+							responseData.setProtein(key.getValue());
+							break;
+						case "muscle rate":
+							responseData.setMuscleRate(key.getValue());
+							break;
+						case "visceral fat":
+							responseData.setVisceralFat(key.getValue());
+							break;
+						case "BMI":
+							responseData.setBmi(key.getValue());
+							break;
+					}
 				}
 
-				datas.add(keyValues);
 
 				try {
 
-					Log.e(TAG, "AprilisDeviceQnscale.onGetScaleData : Sync. data = " + keyValues.toString());
+					Log.d(TAG, "AprilisDeviceQnscale.onGetScaleData : Sync. data = " + responseData.toString());
 
 					// 성공으로 측정 데이터 반환
-					callbackContext.success(new ObjectMapper().writeValueAsString(new AprilisDeviceQnscaleResponse(true, "Data received", datas)));
+					String dataString = new ObjectMapper().writeValueAsString(new AprilisDeviceQnscaleResponse(true, "Data received"));
+
+					Log.d(TAG, "AprilisDeviceQnscale.onGetScaleData : Sync. data string = " + dataString);
+
+					callbackContext.success(dataString);
 				} catch (JsonProcessingException e) {
+					Log.e(TAG, "AprilisDeviceQnscale.onGetScaleData : error -  " + e.toString());
 				}
 			}
 

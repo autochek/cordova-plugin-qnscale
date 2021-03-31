@@ -1,4 +1,4 @@
-package cordova.plugin.qnscale;
+package cordova.plugins.aprilis.device.qnscale;
 
 /**
  * 응답 결과 클래스
