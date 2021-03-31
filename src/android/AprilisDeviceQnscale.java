@@ -1,4 +1,4 @@
-package cordova.plugin.qnscale;
+package cordova.plugins.aprilis.device.qnscale;
 
 import android.content.Intent;
 import android.util.Log;
@@ -97,15 +97,15 @@ public class AprilisDeviceQnscale extends CordovaPlugin {
 			String deviceId = args.getString(0);
 			int connectionTimeoutSec = args.getInt(1);
 			String userId = args.getString(2);
-			int height = args.getInt(3);
-			String gender = args.getString(4);
-			String birthDate = args.getString(5);
+			String gender = args.getString(3);
+			int year = args.getInt(4);
+			int height = args.getInt(5);
 
 			// API 인스턴스를 가져온다.
 			this.instance = QNBleApi.getInstance(this.cordova.getActivity().getApplicationContext());
 
 			// 장치 연결
-			this.connect(deviceId, connectionTimeoutSec, userId, height, gender, birthDate, callbackContext);
+			this.connect(deviceId, connectionTimeoutSec, userId, gender, year, height, callbackContext);
 
 			return true;
 		}
@@ -159,12 +159,12 @@ public class AprilisDeviceQnscale extends CordovaPlugin {
 	 * @param deviceId 장치 아이디 (맥주소)
 	 * @param connectionTimeoutSec 연결 타임 아웃 (초)
 	 * @param userId 사용자 아이디
-	 * @param height 키
 	 * @param gender 성별
-	 * @param birthDateString 생년월일
+	 * @param year 생년
+	 * @param height 키
 	 * @param callbackContext 결과 콜백 컨텍스트
 	 */
-	private void connect(String deviceId, int connectionTimeoutSec, String userId, int height, String gender, String birthDateString, CallbackContext callbackContext) {
+	private void connect(String deviceId, int connectionTimeoutSec, String userId, String gender, int year, int height, CallbackContext callbackContext) {
 
 		Log.d(TAG, "try to connect : " + deviceId);
 
@@ -218,7 +218,7 @@ public class AprilisDeviceQnscale extends CordovaPlugin {
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 				Date birthDate = new Date();
 				try {
-					birthDate = dateFormat.parse(birthDateString);
+					birthDate = dateFormat.parse(String.valueOf(year) + "-01-02");
 				} catch (ParseException e) {
 				}
 				// 사용자 정보 생성
