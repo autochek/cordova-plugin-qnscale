@@ -1,21 +1,60 @@
 package cordova.plugins.aprilis.device.qnscale;
 
 /**
- * 응답 결과 클래스
+ * 데이터 응답 클래스
  */
 public class AprilisDeviceQnscaleData {
+	/**
+	 * 체중
+	 */
 	private double weight = 0;
+	/**
+	 * 골량
+	 */
 	private double boneMass = 0;
+	/**
+	 * BMI
+	 */
 	private double bmi = 0;
+	/**
+	 * BMR
+	 */
 	private double bmr = 0;
+	/**
+	 * 신진 대사 연령
+	 */
 	private double metabolicAge = 0;
+	/**
+	 * 체지방률
+	 */
 	private double bodyFatRate = 0;
+	/**
+	 * 체형 지수
+	 */
 	private double bodyType = 0;
+	/**
+	 * 근육량
+	 */
 	private double muscleMass = 0;
+	/**
+	 * 체수분율
+	 */
 	private double bodyWaterRate = 0;
+	/**
+	 * 피하 지방
+	 */
 	private double subcutaneousFat = 0;
+	/**
+	 * 단백질
+	 */
 	private double protein = 0;
+	/**
+	 * 근육 비율
+	 */
 	private double muscleRate = 0;
+	/**
+	 * 내장 지방
+	 */
 	private double visceralFat = 0;
 
 	@Override
