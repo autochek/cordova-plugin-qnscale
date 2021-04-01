@@ -2,6 +2,7 @@
 
 #import <Cordova/CDV.h>
 #import <QNSDK/QNBleApi.h>
+#import "AprilisDeviceQnscale.h"
 #import "AprilisDeviceQnscaleResponse.h"
 #import "AprilisDeviceQnscaleData.h"
 
