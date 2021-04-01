@@ -32,8 +32,8 @@
 	</platform>
 	<platform name="ios">
 		<config-file parent="/*" target="config.xml">
-			<feature name="Qnscale">
-				<param name="ios-package" value="Qnscale" />
+			<feature name="AprilisDeviceQnscale">
+				<param name="ios-package" value="AprilisDeviceQnscale" />
 			</feature>
 		</config-file>
 		<source-file src="src/ios/AprilisDeviceQnscaleData.h" />
