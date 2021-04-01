@@ -1,8 +1,7 @@
-/********* Qnscale.m Cordova Plugin Implementation *******/
+/********* AprilisDeviceQnscale.m Cordova Plugin Implementation *******/
 
 #import <Cordova/CDV.h>
 #import <QNSDK/QNBleApi.h>
-#import "AprilisDeviceQnscale.h"
 #import "AprilisDeviceQnscaleResponse.h"
 #import "AprilisDeviceQnscaleData.h"
 
@@ -11,7 +10,7 @@
 #define PathForConfigFile						@"APRILIS20191216"
 #define TAG										@"aprilis.autochek.care.Qnscale"
 
-@interface Qnscale <CBCentralManagerDelegate, CBPeripheralDelegate, QNBleProtocolDelegate, QNScaleDataListener> : CDVPlugin {
+@interface AprilisDeviceQnscale <CBCentralManagerDelegate, CBPeripheralDelegate, QNBleProtocolDelegate, QNScaleDataListener> : CDVPlugin {
   // Member variables go here.
 }
 
@@ -100,7 +99,7 @@
 - (void)callbackResult:(CDVInvokedUrlCommand*)command result:(BOOL)result message:(NSString*)message data:(NSDictionary*)data;
 @end
 
-@implementation Qnscale
+@implementation AprilisDeviceQnscale
 
 /**
  * 장치 연결

@@ -40,7 +40,6 @@
 		<source-file src="src/ios/AprilisDeviceQnscaleData.m" />
 		<source-file src="src/ios/AprilisDeviceQnscaleResponse.h" />
 		<source-file src="src/ios/AprilisDeviceQnscaleResponse.m" />
-		<source-file src="src/ios/AprilisDeviceQnscale.h" />
 		<source-file src="src/ios/AprilisDeviceQnscale.m" />
 		<resource-file src="src/APRILIS20191216.qn" />
 		<framework src="src/ios/QNSDK.framework" custom="true" />
