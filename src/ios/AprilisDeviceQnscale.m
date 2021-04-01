@@ -66,14 +66,6 @@
  * 블루투스 프로토콜 핸들러
  */
 @property (nonatomic, strong) QNBleProtocolHandler *protocolHandle;
-/**
- * 측정 데이터
- */
-@property (nonatomic, strong) NSMutableArray<NSDictionary*> *scaleDataList;
-/**
- * 측정 데이터
- */
-@property (nonatomic, strong) NSDate *lastUpdatedTime;
 
 /**
  * 장치 연결
@@ -227,9 +219,6 @@
 	self.currentCommand = command;
 
 	NSLog(@"[%@] Qnscale syncData", TAG);
-
-	// 데이터 초기화
-	self.scaleDataList = [[NSMutableArray alloc] init];
 
 	// API가 초기화 되지 않은 경우
 	if(self.bleApi == nil) {
@@ -671,11 +660,7 @@
 
 	}
 
-	// 측정 데이터 추가
-	[self.scaleDataList addObject:[responseData getDictionary]];
-
-	// 3초 후에 콜백을 실행시킨다.
-	[self delayCallbackResult:3];
+	[self callbackResult:self.currentCommand result:true message:@"Data received" data:[responseData getDictionary]];
 }
 
 /**
@@ -685,100 +670,7 @@
  @param storedDataList 장비에 저장된 데이터 목록
 */
 - (void)onGetStoredScale:(QNBleDevice *)device data:(NSArray<QNScaleStoreData *> *)storedDataList {
-//	NSLog(@"[%@] onGetStoredScale", TAG);
 
-	// 모든 저장된 데이터에 대해서 처리
-	for (QNScaleStoreData *data in storedDataList) {
-		// 저장 데이터를 가져온다.
-		QNScaleData *scaleData = data.generateScaleData;
-
-		// 데이터 저장 객체 생성
-		AprilisDeviceQnscaleData *responseData = [[AprilisDeviceQnscaleData alloc] init];
-
-		NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-		[dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-		NSString *measureTimeString;
-
-		// 측정 시간이 유효하지 않은 경우
-		if(scaleData.measureTime == nil)
-			measureTimeString = [dateFormatter stringFromDate:[NSDate date]];
-			// 측정 시간이 유효한 경우
-		else
-			measureTimeString = [dateFormatter stringFromDate:scaleData.measureTime];
-		responseData.measureTime = measureTimeString;
-
-		// 모든 측정 항목을 가져온다.
-		NSArray<QNScaleItemData*> *items = [scaleData getAllItem];
-		// 모든 측정 항목에 대해서 처리
-		for (QNScaleItemData *item in items) {
-
-			if(item.value) {
-				if ([item.name compare:@"bone mass"] == 0)
-					responseData.boneMass = item.value;
-				else if ([item.name compare:@"BMR"] == 0)
-					responseData.bmr = item.value;
-				else if ([item.name compare:@"weight"] == 0)
-					responseData.weight = item.value;
-				else if ([item.name compare:@"metabolic age"] == 0)
-					responseData.metabolicAge = item.value;
-				else if ([item.name compare:@"body fat rate"] == 0)
-					responseData.bodyFatRate = item.value;
-				else if ([item.name compare:@"body type"] == 0)
-					responseData.bodyType = item.value;
-				else if ([item.name compare:@"muscle mass"] == 0)
-					responseData.muscleMass = item.value;
-				else if ([item.name compare:@"body water rate"] == 0)
-					responseData.bodyWaterRate = item.value;
-				else if ([item.name compare:@"protein"] == 0)
-					responseData.protein = item.value;
-				else if ([item.name compare:@"muscle rate"] == 0)
-					responseData.muscleRate = item.value;
-				else if ([item.name compare:@"visceral fat"] == 0)
-					responseData.visceralFat = item.value;
-				else if ([item.name compare:@"BMI"] == 0)
-					responseData.bmi = item.value;
-			}
-		}
-
-		// 측정 데이터 추가
-		[self.scaleDataList addObject:[responseData getDictionary]];
-
-		// 3초 후에 콜백을 실행시킨다.
-		[self delayCallbackResult:3];
-	}
-}
-
-/**
- * 특정 시간 후에 콜백을 실행시킨다.
- */
-- (void) delayCallbackResult:(int)seconds {
-
-	int timeoutSec = seconds;
-
-	// 현재 시간을 마지막 업데이트 시간으로 저장한다.
-	self.lastUpdatedTime = [NSDate date];
-
-	// 특정 시간 동안 검색이 되지 않는 경우 타임 아웃 시키는 핸들러와 실행 생성
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timeoutSec * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-
-		if(self.lastUpdatedTime != nil) {
-			// 현재 시간
-			NSDate *nowDate = [NSDate date];
-
-			if(nowDate > self.lastUpdatedTime) {
-				// 시간 차를 구한다.
-				NSCalendar *calendar = [NSCalendar currentCalendar];
-				NSUInteger calendarUnit = NSCalendarUnitSecond;
-				NSDateComponents *dateComp = [calendar components:calendarUnit fromDate:self.lastUpdatedTime toDate:nowDate options:0];
-
-				// 타임 아웃이 지난 경우
-				if(dateComp.second >= timeoutSec) {
-					self.lastUpdatedTime = nil;
-					[self callbackResult:self.currentCommand result:true message:@"Data received" data:self.scaleDataList];
-				}
-			}
-		}
-	});
 }
 
 
