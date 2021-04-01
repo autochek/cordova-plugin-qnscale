@@ -67,14 +67,6 @@ public class AprilisDeviceQnscale extends CordovaPlugin {
 	 * 연결된 장치 정보 객체
 	 */
 	private QNBleDevice connectDevice = null;
-	/**
-	 * 데이터 목록
-	 */
-	private List<AprilisDeviceQnscaleData> scaleDataList = null;
-	/**
-	 * 데이터 동기화 핸들러
-	 */
-	private android.os.Handler syncDataHandler = null;
 
 	/**
 	 * Cordova 함수 실행
@@ -113,9 +105,6 @@ public class AprilisDeviceQnscale extends CordovaPlugin {
 		}
 		// 동기화 요청
 		else if (action.equals("syncData")) {
-
-			// 데이터 목록 초기화
-			scaleDataList = new ArrayList<>();
 
 			// API 인스턴스가 유효하지 않거나 장치 정보가 유효하지 않은 경우
 			if (this.instance == null || this.connectDevice == null) {
@@ -239,6 +228,8 @@ public class AprilisDeviceQnscale extends CordovaPlugin {
 					}
 				});
 
+				Log.d(TAG, "user info :" + user.toString());
+
 				// 장치 검색
 				AprilisDeviceQnscale.this.startDiscovery(deviceId, user, callbackContext);
 			}
@@ -316,7 +307,7 @@ public class AprilisDeviceQnscale extends CordovaPlugin {
 								public void onConnected(QNBleDevice device) {
 
 									// 연결된 장치가 없는 경우
-									//if(AprilisDeviceQnscale.this.connectDevice == null)
+									if (AprilisDeviceQnscale.this.connectDevice == null)
 									{
 										Log.d(TAG, "BLUETOOTH DEVICE STATUS : CONNECTED " + device);
 
@@ -407,7 +398,7 @@ public class AprilisDeviceQnscale extends CordovaPlugin {
 						try {
 							// 스캔 에러 반환
 							Log.e(TAG, "AprilisDeviceQnscale.startDiscovery QNBleDeviceDiscoveryListener.onScanFail : Scan failure");
-							callbackContext.error(new ObjectMapper().writeValueAsString(new AprilisDeviceQnscaleResponse(false, "Scan failure")));
+							callbackContext.error(new ObjectMapper().writeValueAsString(new AprilisDeviceQnscaleResponse(false, "연결할 장치를 찾을 수 없습니다.")));
 						} catch (JsonProcessingException e) {
 						}
 					}
@@ -461,9 +452,6 @@ public class AprilisDeviceQnscale extends CordovaPlugin {
 		};
 		// 30초 뒤 타임 아웃 실행
 		this.syncDataTimeoutHandler.postDelayed(this.syncDataTimeoutRunnable, 1000 * 30);
-
-		// 데이터 동기화 핸들러와 실행 생성
-		this.syncDataHandler = new android.os.Handler();
 
 		// 데이터 리스너 설정
 		this.instance.setDataListener(new QNScaleDataListener() {
@@ -546,10 +534,13 @@ public class AprilisDeviceQnscale extends CordovaPlugin {
 
 				Log.d(TAG, "AprilisDeviceQnscale.onGetScaleData : Sync. data = " + responseData.toString());
 
-				// 전송할 데이터 목록에 추가
-				scaleDataList.add(responseData);
+				try {
 
-				AprilisDeviceQnscale.this.delayCallbackResult(3, callbackContext);
+					// 성공으로 측정 데이터 반환
+					callbackContext.success(new ObjectMapper().writeValueAsString(new AprilisDeviceQnscaleResponse(true, "Data received", responseData)));
+				} catch (JsonProcessingException e) {
+					Log.e(TAG, "AprilisDeviceQnscale.onGetScaleData : error -  " + e.toString());
+				}
 			}
 
 			/**
@@ -559,74 +550,6 @@ public class AprilisDeviceQnscale extends CordovaPlugin {
 			 */
 			@Override
 			public void onGetStoredScale(QNBleDevice device, List<QNScaleStoreData> storedDataList) {
-				if(storedDataList != null) {
-
-					// 모든 데이터에 대해서 처리
-					for(QNScaleStoreData item : storedDataList) {
-
-						AprilisDeviceQnscaleData responseData = new AprilisDeviceQnscaleData();
-
-						// 데이터
-						QNScaleData data = item.generateScaleData();
-
-						// 측정 시간이 유효하지 않은 경우, 현재 시간으로 설정
-						if(data.getMeasureTime() == null)
-							data.setMeasureTime(new Date());
-
-						// 측정 시간 저장
-						responseData.setMeasureTime(data.getMeasureTime());
-
-						// 각 항목별로 값 저장
-						for(QNScaleItemData key : data.getAllItem()){
-
-							switch(key.getName()) {
-								case "bone mass":
-									responseData.setBoneMass(key.getValue());
-									break;
-								case "BMR":
-									responseData.setBmr(key.getValue());
-									break;
-								case "weight":
-									responseData.setWeight(key.getValue());
-									break;
-								case "metabolic age":
-									responseData.setMetabolicAge(key.getValue());
-									break;
-								case "body fat rate":
-									responseData.setBodyFatRate(key.getValue());
-									break;
-								case "body type":
-									responseData.setBodyType(key.getValue());
-									break;
-								case "muscle mass":
-									responseData.setMuscleMass(key.getValue());
-									break;
-								case "body water rate":
-									responseData.setBodyWaterRate(key.getValue());
-									break;
-								case "protein":
-									responseData.setProtein(key.getValue());
-									break;
-								case "muscle rate":
-									responseData.setMuscleRate(key.getValue());
-									break;
-								case "visceral fat":
-									responseData.setVisceralFat(key.getValue());
-									break;
-								case "BMI":
-									responseData.setBmi(key.getValue());
-									break;
-							}
-						}
-
-						Log.d(TAG, "AprilisDeviceQnscale.onGetStoredScale : Sync. data = " + responseData.toString());
-
-						// 전송할 데이터 목록에 추가
-						scaleDataList.add(responseData);
-
-						AprilisDeviceQnscale.this.delayCallbackResult(3, callbackContext);
-					}
-				}
 			}
 
 			/**
@@ -651,33 +574,6 @@ public class AprilisDeviceQnscale extends CordovaPlugin {
 
 		});
 
-	}
-
-	/**
-	 * 주어진 시간(초) 후에 콜백을 실행시킨다.
-	 * @param seconds 지연 시간(초)
-	 * @param callbackContext 결과 콜백 컨텍스트
-	 */
-	private void delayCallbackResult(int seconds, CallbackContext callbackContext) {
-
-		// 이전 실행요청 취소
-		AprilisDeviceQnscale.this.syncDataHandler.removeCallbacks(null);
-
-		// 3초 뒤 데이터 동기화 결과 전송
-		AprilisDeviceQnscale.this.syncDataHandler.postDelayed(new Runnable() {
-			public void run() {
-
-				try {
-
-					Log.d(TAG, "AprilisDeviceQnscale.setDataListener : Sync. count = " + scaleDataList.size());
-
-					// 성공으로 측정 데이터 반환
-					callbackContext.success(new ObjectMapper().writeValueAsString(new AprilisDeviceQnscaleResponse(true, "Data received", scaleDataList)));
-				} catch (JsonProcessingException e) {
-					Log.e(TAG, "AprilisDeviceQnscale.onGetScaleData : error -  " + e.toString());
-				}
-			}
-		}, 1000 * 3);
 	}
 
 	/**
