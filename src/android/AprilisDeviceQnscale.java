@@ -493,6 +493,15 @@ public class AprilisDeviceQnscale extends CordovaPlugin {
 				}
 
 				AprilisDeviceQnscaleData responseData = new AprilisDeviceQnscaleData();
+
+				// 측정 시간이 유효하지 않은 경우, 현재 시간으로 설정
+				if(data.getMeasureTime() == null)
+					data.setMeasureTime(new Date());
+
+				// 측정 시간 저장
+				responseData.setMeasureTime(data.getMeasureTime());
+
+				// 각 항목별로 값 저장
 				for(QNScaleItemData key : data.getAllItem() ){
 
 					switch(key.getName()) {
@@ -555,10 +564,19 @@ public class AprilisDeviceQnscale extends CordovaPlugin {
 					// 모든 데이터에 대해서 처리
 					for(QNScaleStoreData item : storedDataList) {
 
+						AprilisDeviceQnscaleData responseData = new AprilisDeviceQnscaleData();
+
 						// 데이터
 						QNScaleData data = item.generateScaleData();
 
-						AprilisDeviceQnscaleData responseData = new AprilisDeviceQnscaleData();
+						// 측정 시간이 유효하지 않은 경우, 현재 시간으로 설정
+						if(data.getMeasureTime() == null)
+							data.setMeasureTime(new Date());
+
+						// 측정 시간 저장
+						responseData.setMeasureTime(data.getMeasureTime());
+
+						// 각 항목별로 값 저장
 						for(QNScaleItemData key : data.getAllItem()){
 
 							switch(key.getName()) {

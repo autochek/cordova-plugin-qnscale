@@ -1,9 +1,17 @@
 package cordova.plugins.aprilis.device.qnscale;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 /**
  * 데이터 응답 클래스
  */
 public class AprilisDeviceQnscaleData {
+	/**
+	 * 측정 시간
+	 */
+	private String measureTime = "";
 	/**
 	 * 체중
 	 */
@@ -74,6 +82,17 @@ public class AprilisDeviceQnscaleData {
 				", muscleRate=" + muscleRate +
 				", visceralFat=" + visceralFat +
 				'}';
+	}
+
+	public String getMeasureTime() {
+		return measureTime;
+	}
+
+	public void setMeasureTime(Date measureTime) {
+		final String ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+		final SimpleDateFormat sdf = new SimpleDateFormat(ISO_FORMAT);
+		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+		this.measureTime = sdf.format(measureTime);
 	}
 
 	public double getWeight() {
