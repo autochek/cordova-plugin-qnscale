@@ -118,7 +118,7 @@
 	NSNumber *year = [command.arguments objectAtIndex:4];
 	self.height = [command.arguments objectAtIndex:5];
 
-	NSString *birthDateString = [NSString stringWithFormat:@"%d-01-02", year];
+	NSString *birthDateString = [NSString stringWithFormat:@"%@-01-02", year];
 
 	// Date Formatter 생성
 	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -130,7 +130,7 @@
 	NSLog(@"[%@] Qnscale connect : deviceId=%@, connectionTimeoutSec=%@, userId=%@, height=%@, gender=%@, birthDate=%@"
 			, TAG, self.deviceId, connectionTimeoutSec, self.userId, self.height, self.gender, self.birthDate);
 
-	// 디바이스 아이디가 유효하지 않은 경우
+	// 디바이스 아이디가 유효한 경우
     if (self.deviceId != nil && [self.deviceId length] > 0) {
 
 		// 백그라운드에서 실행
@@ -142,8 +142,6 @@
 				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, connectionTimeoutSec.intValue * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
 					if(self.bleDevice != nil) {
 						[self.bleApi stopBleDeviceDiscorvery:^(NSError *error) {
-							if(error)
-								[self callbackResult:command result:false message:@"Fail to build user"];
 							// 타임 아웃 에러 반환
 							[self callbackResult:command result:false message:@"Connection timeout"];
 						}];
