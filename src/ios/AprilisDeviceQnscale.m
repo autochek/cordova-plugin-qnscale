@@ -3,6 +3,7 @@
 #import <Cordova/CDV.h>
 #import <QNSDK/QNBleApi.h>
 #import "AprilisDeviceQnscaleResponse.h"
+#import "AprilisDeviceQnscaleData.h"
 
 #define AutoChekBodyCompositionMainService		@"FFF0"
 #define AutoChekBodyCompositionMainServiceRead	@"FFF1"
@@ -68,7 +69,7 @@
 /**
  * 측정 데이터
  */
-@property (nonatomic, strong) NSMutableArray<NSDictionary*> *datas;
+@property (nonatomic, strong) NSMutableArray<NSDictionary*> *scaleDataList;
 /**
  * 측정 데이터
  */
@@ -121,9 +122,11 @@
     self.deviceId = [command.arguments objectAtIndex:0];
 	NSNumber *connectionTimeoutSec = [command.arguments objectAtIndex:1];
 	self.userId = [command.arguments objectAtIndex:2];
-	self.height = [command.arguments objectAtIndex:3];
-	self.gender = [command.arguments objectAtIndex:4];
-	NSString *birthDateString = [command.arguments objectAtIndex:5];
+	self.gender = [command.arguments objectAtIndex:3];
+	NSNumber *year = [command.arguments objectAtIndex:4];
+	self.height = [command.arguments objectAtIndex:5];
+
+	NSString *birthDateString = [NSString stringWithFormat:@"%d-01-02", year];
 
 	// Date Formatter 생성
 	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -226,7 +229,7 @@
 	NSLog(@"[%@] Qnscale syncData", TAG);
 
 	// 데이터 초기화
-	self.datas = [[NSMutableArray alloc] init];
+	self.scaleDataList = [[NSMutableArray alloc] init];
 
 	// API가 초기화 되지 않은 경우
 	if(self.bleApi == nil) {
@@ -620,7 +623,7 @@
 //	NSLog(@"[%@] onGetScaleData", TAG);
 
 	// 데이터 저장 객체 생성
-	NSMutableDictionary *dataDictionary = [[NSMutableDictionary alloc] init];
+	AprilisDeviceQnscaleData *responseData = [[AprilisDeviceQnscaleData alloc] init];
 
 	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
 	[dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
@@ -632,7 +635,7 @@
 	// 측정 시간이 유효한 경우
 	else
 		measureTimeString = [dateFormatter stringFromDate:scaleData.measureTime];
-	[dataDictionary setObject:measureTimeString forKey:@"measureTime"];
+	responseData.measureTime = measureTimeString;
 
 	// 모든 측정 항목을 가져온다.
 	NSArray<QNScaleItemData*> *items = [scaleData getAllItem];
@@ -640,21 +643,39 @@
 	for (QNScaleItemData *item in items) {
 
 		if(item.value) {
-
-			[dataDictionary setObject:[NSNumber numberWithDouble:item.value] forKey:item.name];
-
+			if ([item.name compare:@"bone mass"] == 0)
+				responseData.boneMass = item.value;
+			else if ([item.name compare:@"BMR"] == 0)
+				responseData.bmr = item.value;
+			else if ([item.name compare:@"weight"] == 0)
+				responseData.weight = item.value;
+			else if ([item.name compare:@"metabolic age"] == 0)
+				responseData.metabolicAge = item.value;
+			else if ([item.name compare:@"body fat rate"] == 0)
+				responseData.bodyFatRate = item.value;
+			else if ([item.name compare:@"body type"] == 0)
+				responseData.bodyType = item.value;
+			else if ([item.name compare:@"muscle mass"] == 0)
+				responseData.muscleMass = item.value;
+			else if ([item.name compare:@"body water rate"] == 0)
+				responseData.bodyWaterRate = item.value;
+			else if ([item.name compare:@"protein"] == 0)
+				responseData.protein = item.value;
+			else if ([item.name compare:@"muscle rate"] == 0)
+				responseData.muscleRate = item.value;
+			else if ([item.name compare:@"visceral fat"] == 0)
+				responseData.visceralFat = item.value;
+			else if ([item.name compare:@"BMI"] == 0)
+				responseData.bmi = item.value;
 		}
 
 	}
 
 	// 측정 데이터 추가
-	[self.datas addObject:dataDictionary];
+	[self.scaleDataList addObject:[responseData getDictionary]];
 
-	// 현재 시간을 마지막 업데이트 시간으로 저장한다.
-	self.lastUpdatedTime = [NSDate date];
-
-	// 특정 시간 후에 콜백을 실행시킨다.
-	[self delayCallbackResult];
+	// 3초 후에 콜백을 실행시킨다.
+	[self delayCallbackResult:3];
 }
 
 /**
@@ -672,7 +693,7 @@
 		QNScaleData *scaleData = data.generateScaleData;
 
 		// 데이터 저장 객체 생성
-		NSMutableDictionary *dataDictionary = [[NSMutableDictionary alloc] init];
+		AprilisDeviceQnscaleData *responseData = [[AprilisDeviceQnscaleData alloc] init];
 
 		NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
 		[dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
@@ -684,31 +705,58 @@
 			// 측정 시간이 유효한 경우
 		else
 			measureTimeString = [dateFormatter stringFromDate:scaleData.measureTime];
-		[dataDictionary setObject:measureTimeString forKey:@"measureTime"];
+		responseData.measureTime = measureTimeString;
 
 		// 모든 측정 항목을 가져온다.
 		NSArray<QNScaleItemData*> *items = [scaleData getAllItem];
+		// 모든 측정 항목에 대해서 처리
+		for (QNScaleItemData *item in items) {
 
-		if(items.count > 0) {
-			// 모든 측정 항목에 대해서 처리
-			for (QNScaleItemData *item in items) {
-
-				[dataDictionary setObject:[NSNumber numberWithDouble:item.value] forKey:item.name];
-
+			if(item.value) {
+				if ([item.name compare:@"bone mass"] == 0)
+					responseData.boneMass = item.value;
+				else if ([item.name compare:@"BMR"] == 0)
+					responseData.bmr = item.value;
+				else if ([item.name compare:@"weight"] == 0)
+					responseData.weight = item.value;
+				else if ([item.name compare:@"metabolic age"] == 0)
+					responseData.metabolicAge = item.value;
+				else if ([item.name compare:@"body fat rate"] == 0)
+					responseData.bodyFatRate = item.value;
+				else if ([item.name compare:@"body type"] == 0)
+					responseData.bodyType = item.value;
+				else if ([item.name compare:@"muscle mass"] == 0)
+					responseData.muscleMass = item.value;
+				else if ([item.name compare:@"body water rate"] == 0)
+					responseData.bodyWaterRate = item.value;
+				else if ([item.name compare:@"protein"] == 0)
+					responseData.protein = item.value;
+				else if ([item.name compare:@"muscle rate"] == 0)
+					responseData.muscleRate = item.value;
+				else if ([item.name compare:@"visceral fat"] == 0)
+					responseData.visceralFat = item.value;
+				else if ([item.name compare:@"BMI"] == 0)
+					responseData.bmi = item.value;
 			}
-
-			// 측정 데이터 추가
-			[self.datas addObject:dataDictionary];
 		}
+
+		// 측정 데이터 추가
+		[self.scaleDataList addObject:[responseData getDictionary]];
+
+		// 3초 후에 콜백을 실행시킨다.
+		[self delayCallbackResult:3];
 	}
 }
 
 /**
  * 특정 시간 후에 콜백을 실행시킨다.
  */
-- (void) delayCallbackResult {
+- (void) delayCallbackResult:(int)seconds {
 
-	int timeoutSec = 3;
+	int timeoutSec = seconds;
+
+	// 현재 시간을 마지막 업데이트 시간으로 저장한다.
+	self.lastUpdatedTime = [NSDate date];
 
 	// 특정 시간 동안 검색이 되지 않는 경우 타임 아웃 시키는 핸들러와 실행 생성
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timeoutSec * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
@@ -717,15 +765,17 @@
 			// 현재 시간
 			NSDate *nowDate = [NSDate date];
 
-			// 시간 차를 구한다.
-			NSCalendar *calendar = [NSCalendar currentCalendar];
-			NSUInteger calendarUnit = NSCalendarUnitSecond;
-			NSDateComponents *dateComp = [calendar components:calendarUnit fromDate:self.lastUpdatedTime toDate:nowDate options:0];
+			if(nowDate > self.lastUpdatedTime) {
+				// 시간 차를 구한다.
+				NSCalendar *calendar = [NSCalendar currentCalendar];
+				NSUInteger calendarUnit = NSCalendarUnitSecond;
+				NSDateComponents *dateComp = [calendar components:calendarUnit fromDate:self.lastUpdatedTime toDate:nowDate options:0];
 
-			// 타임 아웃이 지난 경우
-			if(dateComp.second >= timeoutSec) {
-				self.lastUpdatedTime = nil;
-				[self callbackResult:self.currentCommand result:true message:@"Data received" data:self.datas];
+				// 타임 아웃이 지난 경우
+				if(dateComp.second >= timeoutSec) {
+					self.lastUpdatedTime = nil;
+					[self callbackResult:self.currentCommand result:true message:@"Data received" data:self.scaleDataList];
+				}
 			}
 		}
 	});
