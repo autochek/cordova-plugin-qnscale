@@ -299,50 +299,47 @@ public class AprilisDeviceQnscale extends CordovaPlugin {
 								 */
 								@Override
 								public void onConnecting(QNBleDevice device) {
-									Log.d(TAG, "BLUETOOTH DEVICE STATUS : CONNECTING");
+									Log.d(TAG, "BLUETOOTH DEVICE STATUS : onConnecting");
 								}
 
 								// 연결 됨
 								@Override
 								public void onConnected(QNBleDevice device) {
 
-									// 연결된 장치가 없는 경우
-									if (AprilisDeviceQnscale.this.connectDevice == null)
-									{
-										Log.d(TAG, "BLUETOOTH DEVICE STATUS : CONNECTED " + device);
+									Log.d(TAG, "BLUETOOTH DEVICE STATUS : onConnected");
 
-										// 타임 아웃 취소
-										if(AprilisDeviceQnscale.this.connectionTimeoutHandler != null) {
-											AprilisDeviceQnscale.this.connectionTimeoutHandler.removeCallbacks(AprilisDeviceQnscale.this.connectionTimeoutRunnable);
-											AprilisDeviceQnscale.this.connectionTimeoutRunnable = null;
-											AprilisDeviceQnscale.this.connectionTimeoutHandler = null;
-										}
+									// 타임 아웃 취소
+									if(AprilisDeviceQnscale.this.connectionTimeoutHandler != null) {
+										AprilisDeviceQnscale.this.connectionTimeoutHandler.removeCallbacks(AprilisDeviceQnscale.this.connectionTimeoutRunnable);
+										AprilisDeviceQnscale.this.connectionTimeoutRunnable = null;
+										AprilisDeviceQnscale.this.connectionTimeoutHandler = null;
+									}
 
-										// 연결된 장치 정보 저장
-										AprilisDeviceQnscale.this.connectDevice = device;
+									// 연결된 장치 정보 저장
+									AprilisDeviceQnscale.this.connectDevice = device;
 
-										try {
-											// 성공으로 결과 반환
-											callbackContext.success(new ObjectMapper().writeValueAsString(new AprilisDeviceQnscaleResponse(true, "Device connected", device)));
-										} catch (JsonProcessingException e) {
-										}
+									try {
+										// 성공으로 결과 반환
+										callbackContext.success(new ObjectMapper().writeValueAsString(new AprilisDeviceQnscaleResponse(true, "Device connected", device)));
+									} catch (JsonProcessingException e) {
 									}
 								}
 
 								@Override
 								public void onServiceSearchComplete(QNBleDevice device) {
+									Log.d(TAG, "BLUETOOTH DEVICE STATUS : onServiceSearchComplete");
 								}
 
 								// 연결 해제 중
 								@Override
 								public void onDisconnecting(QNBleDevice device) {
-									Log.d(TAG, "BLUETOOTH DEVICE STATUS : DISCONNECTING");
+									Log.d(TAG, "BLUETOOTH DEVICE STATUS : onDisconnecting");
 								}
 
 								// 연결 해제 됨
 								@Override
 								public void onDisconnected(QNBleDevice device) {
-									Log.d(TAG, "BLUETOOTH DEVICE STATUS : DISCONNECTED");
+									Log.d(TAG, "BLUETOOTH DEVICE STATUS : onDisconnecting");
 
 									// 연결 장치 정보 초기화
 									AprilisDeviceQnscale.this.connectDevice = null;
